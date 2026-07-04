@@ -75,21 +75,15 @@ for the complete workflow.
 ## Commit Convention
 
 ```
-feat:
-fix:
-refactor:
-docs:
-test:
-chore:
+feat: new feature  
+fix: bug fix  
+refactor: code restructuring without behavior change  
+docs: documentation changes  
+test: adding or updating tests  
+chore: maintenance tasks  
 ```
 
 Example:
-
-```
-feat: implement semester roadmap generation
-fix: resolve calendar sync issue
-docs: update README
-```
 
 ---
 
