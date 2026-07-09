@@ -1,4 +1,4 @@
-# Tactica AI
+# Tactica AI Frontend
 
 An AI-powered academic planning platform that helps university students organize coursework, generate personalized study roadmaps, and plan their degree with Retrieval-Augmented Generation (RAG).
 
