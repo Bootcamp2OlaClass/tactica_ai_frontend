@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import type { DashboardSemester } from "@/types/dashboard";
 import { formatDate } from "./dashboard-formatters";
 
@@ -8,6 +10,12 @@ export function CurrentSemesterCard({ semester }: { semester: DashboardSemester 
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#696977]">Current semester</p>
         <h2 className="mt-5 text-xl font-semibold">No current semester found.</h2>
         <p className="mt-2 max-w-lg text-sm leading-6 text-[#696977]">Create or activate a semester to begin planning your academic work.</p>
+        <Link
+          href="/semesters"
+          className="mt-4 inline-block rounded-xl bg-[#315bd8] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#284fc4]"
+        >
+          + New semester
+        </Link>
       </section>
     );
   }
@@ -20,7 +28,9 @@ export function CurrentSemesterCard({ semester }: { semester: DashboardSemester 
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#315bd8]">Current semester</p>
           <span className="rounded-full bg-[#e9f7ee] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#217044]">{semester.status}</span>
         </div>
-        <h2 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">{semester.name}</h2>
+        <Link href={`/semesters/${semester.id}`} className="mt-5 block w-fit rounded text-3xl font-semibold tracking-[-0.04em] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#315bd8]">
+          {semester.name}
+        </Link>
         <p className="mt-2 text-sm text-[#696977]">{formatDate(semester.startDate)} – {formatDate(semester.endDate)}</p>
       </div>
     </section>
