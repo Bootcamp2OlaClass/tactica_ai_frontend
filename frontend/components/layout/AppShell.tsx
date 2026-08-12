@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
+import { EmailVerificationBanner } from "@/components/layout/EmailVerificationBanner";
 import { logout } from "@/services/auth.service";
 
 const NAV_ITEMS = [
@@ -75,6 +76,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </button>
         </div>
       )}
+
+      <EmailVerificationBanner />
 
       <div className="mx-auto flex max-w-7xl">
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-[#dedee9] bg-white px-4 py-6 sm:flex">

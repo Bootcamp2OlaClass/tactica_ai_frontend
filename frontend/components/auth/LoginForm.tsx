@@ -205,9 +205,12 @@ export function LoginForm() {
               Password
             </label>
 
-            <span className="text-xs text-[#696977]">
+            <Link
+              href="/forgot-password"
+              className="rounded text-xs font-medium text-[#315bd8] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#315bd8]"
+            >
               Forgot password?
-            </span>
+            </Link>
           </div>
 
           <input

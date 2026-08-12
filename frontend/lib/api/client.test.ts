@@ -1,6 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ApiError, getApiErrorMessage, getApiFieldErrors } from "./client";
+import {
+  ApiError,
+  clearAuthenticationToken,
+  getApiErrorMessage,
+  getApiFieldErrors,
+  hasAuthenticationToken,
+  refreshSession,
+  setAuthenticationToken,
+} from "./client";
 
 describe("getApiErrorMessage", () => {
   it("gives a friendly message for an expired session", () => {
@@ -51,5 +59,72 @@ describe("getApiFieldErrors", () => {
   it("returns null when the 422 body has no field-level detail array", () => {
     const error = new ApiError("bad request", 422, { detail: "just a string" });
     expect(getApiFieldErrors(error)).toBeNull();
+  });
+});
+
+describe("session token state", () => {
+  afterEach(() => {
+    clearAuthenticationToken();
+  });
+
+  it("tracks whether an access token is currently held in memory", () => {
+    expect(hasAuthenticationToken()).toBe(false);
+    setAuthenticationToken("abc123");
+    expect(hasAuthenticationToken()).toBe(true);
+    clearAuthenticationToken();
+    expect(hasAuthenticationToken()).toBe(false);
+  });
+});
+
+describe("refreshSession", () => {
+  const originalApiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_API_BASE_URL = "http://localhost:8000";
+  });
+
+  afterEach(() => {
+    process.env.NEXT_PUBLIC_API_BASE_URL = originalApiBaseUrl;
+    clearAuthenticationToken();
+    vi.restoreAllMocks();
+  });
+
+  it("stores the new access token and resolves true on success", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ access_token: "fresh-token" }),
+      }),
+    );
+
+    const result = await refreshSession();
+
+    expect(result).toBe(true);
+    expect(hasAuthenticationToken()).toBe(true);
+  });
+
+  it("clears the token and resolves false when the refresh cookie is invalid", async () => {
+    setAuthenticationToken("stale-token");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 401 }));
+
+    const result = await refreshSession();
+
+    expect(result).toBe(false);
+    expect(hasAuthenticationToken()).toBe(false);
+  });
+
+  it("coalesces concurrent callers onto a single in-flight request", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ access_token: "fresh-token" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const [first, second] = await Promise.all([refreshSession(), refreshSession()]);
+
+    expect(first).toBe(true);
+    expect(second).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

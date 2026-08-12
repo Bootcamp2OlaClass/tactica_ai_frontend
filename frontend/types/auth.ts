@@ -24,3 +24,20 @@ export type RegisterFieldErrors = {
   email?: string;
   password?: string;
 };
+
+export type CurrentUser = {
+  id: number;
+  email: string;
+  fullName: string;
+  role: string;
+  emailVerified: boolean;
+};
+
+export type ForgotPasswordFieldErrors = {
+  email?: string;
+};
+
+export type ResetPasswordFieldErrors = {
+  password?: string;
+  confirmPassword?: string;
+};

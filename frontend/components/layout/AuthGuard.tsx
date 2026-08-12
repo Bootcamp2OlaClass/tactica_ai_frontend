@@ -1,38 +1,46 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 
-import { hasAuthenticationToken } from "@/lib/api/client";
+import { hasAuthenticationToken, refreshSession } from "@/lib/api/client";
 
-// No external event fires when the token changes (it's plain localStorage,
-// written only by our own login/logout code paths, not by other tabs), so
-// there is nothing to subscribe to — the snapshot is read once per render.
-function subscribe() {
-  return () => {};
-}
-
-function getServerSnapshot() {
-  return false;
-}
+type SessionStatus = "checking" | "authenticated" | "unauthenticated";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // useSyncExternalStore (rather than useState+useEffect) reads this
-  // browser-only value safely: it renders `false` during SSR/hydration and
-  // only reflects the real token once mounted on the client, without an
-  // effect body calling setState.
-  const isAuthenticated = useSyncExternalStore(subscribe, hasAuthenticationToken, getServerSnapshot);
+  // The access token lives in memory only, so a hard page load always starts
+  // with none — the real signal of whether a session exists is the httpOnly
+  // refresh cookie, which JS can't read directly. A silent refresh on mount
+  // is how we find out; until it resolves the app shell stays hidden.
+  const [status, setStatus] = useState<SessionStatus>(() =>
+    hasAuthenticationToken() ? "authenticated" : "checking",
+  );
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (status !== "checking") return;
+
+    let cancelled = false;
+
+    refreshSession().then((isAuthenticated) => {
+      if (cancelled) return;
+      setStatus(isAuthenticated ? "authenticated" : "unauthenticated");
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [status]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
       router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
     }
-  }, [isAuthenticated, pathname, router]);
+  }, [status, pathname, router]);
 
-  if (!isAuthenticated) {
+  if (status !== "authenticated") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f6f4ff]" aria-busy="true" aria-live="polite">
         <span className="sr-only">Checking your session…</span>

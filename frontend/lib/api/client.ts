@@ -25,34 +25,75 @@ export function hasConfiguredApi(): boolean {
   return getApiBaseUrl().length > 0;
 }
 
-// Interim storage mechanism for Phase 0 only. Revisit as part of Phase 02
-// (Auth Hardening / ADR-001) — httpOnly cookies avoid exposing the token to
-// injected scripts, which plain localStorage does not.
-const ACCESS_TOKEN_STORAGE_KEY = "tactica_access_token";
+// Phase 02 (Auth Hardening / ADR-001): the access token lives in memory only
+// (not localStorage, not readable by injected scripts) and is re-obtained on
+// page load via a silent refresh — the actual long-lived credential is a
+// separate, backend-set httpOnly refresh cookie (scoped to /auth) that this
+// module never touches directly.
+let inMemoryAccessToken: string | null = null;
 
 export function setAuthenticationToken(token: string): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
+  inMemoryAccessToken = token;
 }
 
 export function clearAuthenticationToken(): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
+  inMemoryAccessToken = null;
 }
 
 export function hasAuthenticationToken(): boolean {
-  return getAuthenticationToken() !== null;
+  return inMemoryAccessToken !== null;
 }
 
 function getAuthenticationToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return window.localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+  return inMemoryAccessToken;
+}
+
+// Multiple requests can hit a 401 at (roughly) the same moment when the
+// access token expires — e.g. a page firing several authenticated calls at
+// once. Refresh tokens are single-use/rotating, so two concurrent /auth/refresh
+// calls would race: the loser would replay an already-rotated token, which
+// the backend treats as theft and revokes the whole session for. Coalescing
+// concurrent callers onto one in-flight refresh avoids that self-inflicted
+// logout.
+let refreshInFlight: Promise<boolean> | null = null;
+
+/** Attempts a silent session refresh via the httpOnly refresh cookie. */
+export function refreshSession(): Promise<boolean> {
+  if (refreshInFlight) return refreshInFlight;
+
+  refreshInFlight = (async () => {
+    const baseUrl = getApiBaseUrl();
+    if (!baseUrl) return false;
+
+    try {
+      const response = await fetch(`${baseUrl}/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        inMemoryAccessToken = null;
+        return false;
+      }
+
+      const data = (await response.json()) as { access_token: string };
+      inMemoryAccessToken = data.access_token;
+      return true;
+    } catch {
+      inMemoryAccessToken = null;
+      return false;
+    } finally {
+      refreshInFlight = null;
+    }
+  })();
+
+  return refreshInFlight;
 }
 
 /**
- * A 401 mid-session (expired/invalidated token) is handled centrally here
- * rather than in every caller: clear the stale token and bounce to /login
- * with a redirect back to the page the user was on.
+ * A 401 that survives a refresh attempt (expired/revoked session) is handled
+ * centrally here rather than in every caller: clear the stale token and
+ * bounce to /login with a redirect back to the page the user was on.
  */
 function handleUnauthorized(): void {
   clearAuthenticationToken();
@@ -147,16 +188,7 @@ export function buildQueryString(
 
 type ApiRequestInit = RequestInit & { json?: unknown };
 
-async function performRequest(path: string, init: ApiRequestInit): Promise<Response> {
-  const baseUrl = getApiBaseUrl();
-  if (!baseUrl) throw new ApiError("The backend API is not configured.", 0);
-
-  const token = getAuthenticationToken();
-  if (!token) {
-    handleUnauthorized();
-    throw new ApiError("Please sign in to continue.", 401);
-  }
-
+async function fetchWithToken(baseUrl: string, path: string, init: ApiRequestInit, token: string): Promise<Response> {
   const { json, headers, ...rest } = init;
   const requestHeaders: Record<string, string> = { Accept: "application/json" };
   let body: BodyInit | undefined;
@@ -166,9 +198,8 @@ async function performRequest(path: string, init: ApiRequestInit): Promise<Respo
     body = JSON.stringify(json);
   }
 
-  let response: Response;
   try {
-    response = await fetch(`${baseUrl}${path}`, {
+    return await fetch(`${baseUrl}${path}`, {
       ...rest,
       headers: { ...requestHeaders, ...headers, Authorization: `Bearer ${token}` },
       body: body ?? rest.body,
@@ -176,9 +207,32 @@ async function performRequest(path: string, init: ApiRequestInit): Promise<Respo
   } catch {
     throw new ApiError("Can't reach the server. Check your connection and try again.", 0);
   }
+}
+
+async function performRequest(path: string, init: ApiRequestInit): Promise<Response> {
+  const baseUrl = getApiBaseUrl();
+  if (!baseUrl) throw new ApiError("The backend API is not configured.", 0);
+
+  let token = getAuthenticationToken();
+  if (!token) {
+    if (!(await refreshSession())) {
+      handleUnauthorized();
+      throw new ApiError("Please sign in to continue.", 401);
+    }
+    token = getAuthenticationToken();
+  }
+
+  let response = await fetchWithToken(baseUrl, path, init, token as string);
 
   if (response.status === 401) {
-    handleUnauthorized();
+    if (await refreshSession()) {
+      token = getAuthenticationToken();
+      response = await fetchWithToken(baseUrl, path, init, token as string);
+    }
+
+    if (response.status === 401) {
+      handleUnauthorized();
+    }
   }
 
   return response;
