@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { setAuthenticationToken } from "@/lib/api/client";
 import {
   AuthenticationError,
   login,
@@ -79,11 +80,13 @@ export function LoginForm() {
     try {
       setIsSubmitting(true);
 
-      await login({
+      const { accessToken } = await login({
         email,
         password,
         rememberMe,
       });
+
+      setAuthenticationToken(accessToken);
 
       const redirect = getSafeRedirect(
         searchParams.get("redirect"),

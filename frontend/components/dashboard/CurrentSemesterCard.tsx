@@ -21,11 +21,7 @@ export function CurrentSemesterCard({ semester }: { semester: DashboardSemester 
           <span className="rounded-full bg-[#e9f7ee] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#217044]">{semester.status}</span>
         </div>
         <h2 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">{semester.name}</h2>
-        <p className="mt-2 text-sm text-[#696977]">{formatDate(semester.startDate)} – {formatDate(semester.endDate)} · {semester.courseCount} courses</p>
-        <div className="mt-8 flex items-center justify-between text-xs"><span className="font-medium">Semester progress</span><span className="font-semibold text-[#315bd8]">{semester.progress}% completed</span></div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#eef0f6]" role="progressbar" aria-label="Semester progress" aria-valuenow={semester.progress} aria-valuemin={0} aria-valuemax={100}>
-          <div className="h-full rounded-full bg-[#315bd8]" style={{ width: `${Math.min(100, Math.max(0, semester.progress))}%` }} />
-        </div>
+        <p className="mt-2 text-sm text-[#696977]">{formatDate(semester.startDate)} – {formatDate(semester.endDate)}</p>
       </div>
     </section>
   );

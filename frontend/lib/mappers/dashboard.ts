@@ -1,81 +1,101 @@
 import type {
-    CourseSummaryApiResponse,
-    CurrentSemesterApiResponse,
-    DashboardSummaryApiResponse,
-    DeadlineSummaryApiResponse,
-    ExamSummaryApiResponse,
-} from "@/types/api";
+  DashboardDocument,
+  DashboardSemester,
+  DashboardStats,
+  DashboardSummary,
+  DashboardTask,
+} from "@/types/dashboard";
 
-import type { CourseSummary } from "@/types/course";
-import type { DashboardSummary } from "@/types/dashboard";
-import type { CurrentSemester } from "@/types/semester";
-import type { DeadlineSummary, ExamSummary } from "@/types/task";
-
-function mapCurrentSemester(
-    semester: CurrentSemesterApiResponse
-): CurrentSemester {
-    return {
-        id: semester.id,
-        name: semester.name,
-        status: semester.status,
-        startDate: semester.start_date,
-        endDate: semester.end_date,
-        courseCount: semester.course_count,
-        progressPercentage: semester.progress_percentage,
-    };
+// Raw shape returned by GET /api/v1/dashboard — matches
+// app/schemas/dashboard.py's DashboardSummaryResponse field-for-field.
+interface RawDashboardSemester {
+  id: number;
+  name: string;
+  status: string;
+  start_date: string;
+  end_date: string;
 }
 
-function mapCourse(course: CourseSummaryApiResponse): CourseSummary {
-    return {
-        id: course.id,
-        courseCode: course.course_code,
-        name: course.name,
-        status: course.status,
-        instructorName: course.instructor_name,
-        color: course.color,
-    };
+interface RawDashboardDeadline {
+  id: number;
+  course_id: number;
+  title: string;
+  task_type: string;
+  status: string;
+  priority: string;
+  due_at: string;
 }
 
-function mapDeadline(
-    deadline: DeadlineSummaryApiResponse
-): DeadlineSummary {
-    return {
-        id: deadline.id,
-        title: deadline.title,
-        courseId: deadline.course_id,
-        courseName: deadline.course_name,
-        dueDate: deadline.due_date,
-        status: deadline.status,
-        priority: deadline.priority,
-        taskType: deadline.task_type,
-    };
+interface RawDashboardDocument {
+  id: number;
+  course_id: number;
+  file_name: string;
+  status: string;
+  created_at: string;
 }
 
-function mapExam(exam: ExamSummaryApiResponse): ExamSummary {
-    return {
-        id: exam.id,
-        title: exam.title,
-        courseId: exam.course_id,
-        courseName: exam.course_name,
-        examDate: exam.exam_date,
-    };
+export interface RawDashboardSummary {
+  current_semester: RawDashboardSemester | null;
+  active_course_count: number;
+  incomplete_task_count: number;
+  overdue_task_count: number;
+  tasks_due_within_seven_days_count: number;
+  upcoming_deadlines: RawDashboardDeadline[];
+  recent_documents: RawDashboardDocument[];
+}
+
+function mapSemester(
+  semester: RawDashboardSemester,
+): DashboardSemester {
+  return {
+    id: String(semester.id),
+    name: semester.name,
+    status: semester.status as DashboardSemester["status"],
+    startDate: semester.start_date,
+    endDate: semester.end_date,
+  };
+}
+
+function mapDeadline(deadline: RawDashboardDeadline): DashboardTask {
+  return {
+    id: String(deadline.id),
+    courseId: String(deadline.course_id),
+    title: deadline.title,
+    taskType: deadline.task_type,
+    priority: deadline.priority as DashboardTask["priority"],
+    status: deadline.status as DashboardTask["status"],
+    dueAt: deadline.due_at,
+  };
+}
+
+function mapDocument(document: RawDashboardDocument): DashboardDocument {
+  return {
+    id: String(document.id),
+    courseId: String(document.course_id),
+    fileName: document.file_name,
+    status: document.status,
+    createdAt: document.created_at,
+  };
+}
+
+function mapStats(summary: RawDashboardSummary): DashboardStats {
+  return {
+    activeCourses: summary.active_course_count,
+    incompleteTasks: summary.incomplete_task_count,
+    overdueTasks: summary.overdue_task_count,
+    tasksDueWithinSevenDays: summary.tasks_due_within_seven_days_count,
+  };
 }
 
 export function mapDashboardSummary(
-    response: DashboardSummaryApiResponse
+  summary: RawDashboardSummary,
 ): DashboardSummary {
-    return {
-        currentSemester: response.current_semester
-            ? mapCurrentSemester(response.current_semester)
-            : null,
-        activeCourseCount: response.active_course_count,
-        upcomingDeadlineCount: response.upcoming_deadline_count,
-        overdueTaskCount: response.overdue_task_count,
-        completedTaskCount: response.completed_task_count,
-        upcomingExamCount: response.upcoming_exam_count,
-        courses: response.courses.map(mapCourse),
-        upcomingDeadlines: response.upcoming_deadlines.map(mapDeadline),
-        overdueTasks: response.overdue_tasks.map(mapDeadline),
-        upcomingExams: response.upcoming_exams.map(mapExam),
-    };
+  return {
+    currentSemester: summary.current_semester
+      ? mapSemester(summary.current_semester)
+      : null,
+    stats: mapStats(summary),
+    upcomingDeadlines: summary.upcoming_deadlines.map(mapDeadline),
+    recentDocuments: summary.recent_documents.map(mapDocument),
+  };
 }

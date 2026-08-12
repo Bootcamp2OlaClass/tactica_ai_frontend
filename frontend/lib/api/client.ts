@@ -24,14 +24,24 @@ export function hasConfiguredApi(): boolean {
   return getApiBaseUrl().length > 0;
 }
 
+// Interim storage mechanism for Phase 0 only. Revisit as part of Phase 02
+// (Auth Hardening / ADR-001) — httpOnly cookies avoid exposing the token to
+// injected scripts, which plain localStorage does not.
+const ACCESS_TOKEN_STORAGE_KEY = "tactica_access_token";
+
+export function setAuthenticationToken(token: string): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
+}
+
+export function clearAuthenticationToken(): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
+}
+
 function getAuthenticationToken(): string | null {
   if (typeof window === "undefined") return null;
-
-  return (
-    window.localStorage.getItem("access_token") ??
-    window.localStorage.getItem("auth_token") ??
-    window.localStorage.getItem("token")
-  );
+  return window.localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
 }
 
 function getErrorMessage(body: ApiErrorBody | null, status: number): string {
