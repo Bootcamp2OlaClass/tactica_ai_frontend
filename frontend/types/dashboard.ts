@@ -1,6 +1,10 @@
-export type SemesterStatus = "ACTIVE" | "UPCOMING" | "COMPLETED";
-export type TaskPriority = "LOW" | "MEDIUM" | "HIGH";
-export type TaskStatus = "TODO" | "IN_PROGRESS" | "COMPLETED";
+export type SemesterStatus = "ACTIVE" | "UPCOMING" | "COMPLETED" | "ARCHIVED";
+// Matches app/models/task.py's TaskPriority/TaskStatus enum values exactly
+// (lowercase) — a prior mismatch here (uppercase, 3-value) meant the
+// priority badge silently failed to render for every real deadline, since
+// the badge lookup was keyed by strings the backend never actually sends.
+export type TaskPriority = "low" | "medium" | "high" | "urgent";
+export type TaskStatus = "todo" | "in_progress" | "completed" | "cancelled";
 
 export interface DashboardSemester {
   id: string;

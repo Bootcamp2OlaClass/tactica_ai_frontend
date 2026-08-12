@@ -1,3 +1,4 @@
+import { clearAuthenticationToken } from "@/lib/api/client";
 import type {
   LoginCredentials,
   LoginResponse,
@@ -112,4 +113,12 @@ export async function register(
   return {
     accessToken: data.access_token,
   };
+}
+
+export function logout(): void {
+  clearAuthenticationToken();
+
+  if (typeof window !== "undefined") {
+    window.location.href = "/login";
+  }
 }
