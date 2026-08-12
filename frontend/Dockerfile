@@ -13,8 +13,11 @@ RUN npm install
 # Copy the rest of the project
 COPY . .
 
-# The Next.js development server listens on port 3000
+# Build the production bundle
+RUN npm run build
+
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "run", "dev"]
+# Start the production server (local dev overrides this command in
+# compose.yaml to run `npm run dev` instead)
+CMD ["npm", "run", "start"]
