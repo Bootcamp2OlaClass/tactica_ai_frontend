@@ -1,5 +1,11 @@
+import { useState } from "react";
+
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/ToastProvider";
+import { getApiErrorMessage } from "@/lib/api/client";
 import { formatDateTime } from "@/lib/format";
+import { syncTaskToCalendar, unsyncTaskFromCalendar } from "@/services/calendar.service";
 import type { Course } from "@/types/course";
 import type { Task } from "@/types/task";
 
@@ -13,6 +19,59 @@ interface TaskListItemProps {
   onDelete: () => void;
   onComplete: () => void;
   onReopen: () => void;
+}
+
+// Self-contained, like DocumentList's own delete/download actions --
+// this component owns its own sync state locally rather than lifting it
+// into the tasks page, since no other part of the page needs to know
+// about it (Phase 12).
+function CalendarSyncAction({ taskId }: { taskId: number }) {
+  const { showToast } = useToast();
+  const [isSynced, setIsSynced] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
+
+  async function handleSync() {
+    setIsBusy(true);
+    try {
+      await syncTaskToCalendar(taskId);
+      setIsSynced(true);
+      showToast("Added to your Google Calendar.", "success");
+    } catch (error) {
+      showToast(getApiErrorMessage(error, "Unable to sync to your calendar."), "error");
+    } finally {
+      setIsBusy(false);
+    }
+  }
+
+  async function handleUnsync() {
+    setIsBusy(true);
+    try {
+      await unsyncTaskFromCalendar(taskId);
+      setIsSynced(false);
+      showToast("Removed from your Google Calendar.", "success");
+    } catch (error) {
+      showToast(getApiErrorMessage(error, "Unable to remove from your calendar."), "error");
+    } finally {
+      setIsBusy(false);
+    }
+  }
+
+  if (isSynced) {
+    return (
+      <div className="flex items-center gap-1.5">
+        <Badge tone="green">On calendar</Badge>
+        <Button variant="ghost" className="!px-2 !py-1 text-xs" onClick={handleUnsync} isLoading={isBusy}>
+          Remove
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <Button variant="secondary" onClick={handleSync} isLoading={isBusy}>
+      Add to calendar
+    </Button>
+  );
 }
 
 export function TaskListItem({ task, course, isBusy, onEdit, onDelete, onComplete, onReopen }: TaskListItemProps) {
@@ -34,7 +93,8 @@ export function TaskListItem({ task, course, isBusy, onEdit, onDelete, onComplet
         </p>
       </div>
 
-      <div className="flex shrink-0 flex-wrap gap-2">
+      <div className="flex shrink-0 flex-wrap items-center gap-2">
+        {task.dueAt && <CalendarSyncAction taskId={task.id} />}
         {canComplete && (
           <Button variant="secondary" onClick={onComplete} isLoading={isBusy}>
             Complete
