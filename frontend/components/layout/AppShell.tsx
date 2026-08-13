@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: "/tasks", label: "Tasks", icon: "✅" },
   { href: "/documents", label: "Documents", icon: "📄" },
   { href: "/chat", label: "Study Coach", icon: "💬" },
+  { href: "/recovery-plan", label: "Recovery Plan", icon: "🧭" },
 ];
 
 function isActive(pathname: string, href: string): boolean {
