@@ -13,6 +13,10 @@ const NAV_ITEMS = [
   { href: "/courses", label: "Courses", icon: "📚" },
   { href: "/tasks", label: "Tasks", icon: "✅" },
   { href: "/documents", label: "Documents", icon: "📄" },
+  { href: "/chat", label: "Study Coach", icon: "💬" },
+  { href: "/recovery-plan", label: "Recovery Plan", icon: "🧭" },
+  { href: "/calendar", label: "Calendar", icon: "📅" },
+  { href: "/notifications", label: "Notifications", icon: "🔔" },
 ];
 
 function isActive(pathname: string, href: string): boolean {

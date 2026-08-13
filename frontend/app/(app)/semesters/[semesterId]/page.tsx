@@ -148,7 +148,13 @@ export default function SemesterDetailPage() {
           {data.description && <p className="mt-3 max-w-xl text-sm leading-6 text-[#454550]">{data.description}</p>}
         </div>
 
-        <div className="flex shrink-0 gap-2">
+        <div className="flex shrink-0 items-center gap-2">
+          <Link
+            href={`/semesters/${semesterId}/roadmap`}
+            className="inline-flex items-center rounded-xl border border-[#cfd2e3] bg-white px-4 py-2.5 text-sm font-semibold text-[#34343c] transition hover:border-[#aeb3cf] hover:bg-[#f6f4ff]"
+          >
+            Roadmap
+          </Link>
           <Button variant="secondary" onClick={() => setIsEditOpen(true)}>
             Edit
           </Button>

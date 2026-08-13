@@ -274,6 +274,30 @@ export async function authenticatedFileUpload<T>(path: string, formData: FormDat
   return body as T;
 }
 
+/**
+ * Like authenticatedApiRequest, but returns the raw Response instead of a
+ * parsed JSON body — for a Server-Sent Events endpoint (Phase 08 chat
+ * streaming), where the caller needs to read `response.body` incrementally
+ * rather than wait for the full response. Auth/refresh/401 handling is
+ * identical to every other authenticated call (via performRequest); only
+ * the response handling differs, since a streaming body can't be
+ * `.json()`-parsed up front the way an error response can.
+ */
+export async function authenticatedStream(
+  path: string,
+  json: unknown,
+  signal?: AbortSignal,
+): Promise<Response> {
+  const response = await performRequest(path, { method: "POST", json, signal });
+
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as ApiErrorBody | null;
+    throw new ApiError(getErrorMessage(body, response.status), response.status, body);
+  }
+
+  return response;
+}
+
 function parseFileNameFromContentDisposition(header: string | null, fallback: string): string {
   if (!header) return fallback;
   const match = /filename\*?=(?:UTF-8''|")?([^";]+)"?/i.exec(header);
