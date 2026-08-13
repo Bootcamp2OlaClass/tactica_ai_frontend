@@ -1,19 +1,20 @@
 # Tactica AI Frontend
 
-An AI-powered academic planning platform that helps university students organize coursework, generate personalized study roadmaps, and plan their degree with Retrieval-Augmented Generation (RAG).
+An AI-powered academic planning platform that helps university students organize coursework, upload and extract deadlines from syllabi, and generate a deterministic-first semester roadmap. This repo is the Next.js frontend; the API it talks to lives in the separate [tactica_ai_backend](https://github.com/Bootcamp2OlaClass/tactica_ai_backend) repo — see that repo's `docs/ARCHITECTURE.md` for the full system design and `docs/SECURITY.md`/`docs/DEPLOYMENT.md` for current verified status.
 
 ---
 
-## Features
+## Features (shipped, not aspirational — see the backend's `PROJECT_STATUS.md`-tracked verification status for exactly what's real-provider-verified vs. not)
 
-- 📅 AI Semester Roadmap
-- 📚 Weekly Study Workspace
-- 🤖 AI Study Coach
-- 🎓 Degree Planning Advisor
-- 👨‍🏫 Course & Professor Intelligence
-- 📖 AI Resource Recommendation
-- 📆 Google Calendar Integration
-- 🔔 Smart Reminder & Notification System
+- 🔐 Auth — register/login/refresh/logout/password reset/email verification/account deletion
+- 📚 Semester/Course/Task/Document CRUD
+- 📄 Document upload + processing + LLM structured extraction (review-gated — nothing auto-commits)
+- 🤖 AI Study Coach chat (retrieval-augmented, grounded, citation-verified)
+- 📅 AI-assisted, deterministic-first semester roadmap (editable, never silently overwrites manual edits)
+- 🧭 Smart recovery planning (deterministic priority ordering, AI explanation only)
+- 🎓 Degree advisor architecture (built and tested against a synthetic catalog — real course-catalog data not yet sourced)
+- 📆 Google Calendar sync
+- 🔔 Email notification preferences
 
 ---
 
@@ -21,25 +22,26 @@ An AI-powered academic planning platform that helps university students organize
 
 | Layer | Technology |
 |--------|------------|
-| Frontend | Next.js, React, TypeScript, Tailwind CSS |
-| Backend | FastAPI (Python) |
+| Frontend | Next.js (App Router), React, TypeScript, Tailwind CSS |
+| Backend | FastAPI (Python), separate repo |
 | Database | PostgreSQL + pgvector |
-| AI / RAG | LangChain, LlamaIndex, Gemini / OpenAI |
-| Document Processing | OCR + Hybrid Deterministic / LLM Extraction |
-| Authentication | Clerk + Google OAuth |
+| AI / RAG | Hand-rolled retrieval directly against pgvector — no LangChain/LlamaIndex |
+| Document Processing | Native PDF extraction (pdfplumber) + LLM structured extraction; OCR-required detection implemented, OCR execution not yet available |
+| Authentication | Custom hardened JWT (refresh rotation, lockout, password reset, email verification) — not Clerk |
 | Background Jobs | Celery + Redis |
-| File Storage | Cloudflare R2 |
-| Notifications | Firebase Cloud Messaging + Resend |
-| Deployment | Vercel (Frontend), Railway (Backend) |
+| File Storage | `StorageProvider` abstraction — local disk (dev) or Cloudflare R2 |
+| Notifications | Resend (email); FCM push not yet implemented |
+| Deployment | Not yet decided/deployed — local `docker compose` only today |
+
+This table intentionally does not match this project's original planning documents in every row — several of those choices were revisited with reasoning during implementation (see the backend repo's `docs/ARCHITECTURE.md` "Where this diverges from the originally-documented target architecture").
 
 ---
 
 ## Project Structure
 
 ```
-frontend/          Next.js application
-backend/           FastAPI service
-docs/              Project documentation
+frontend/          Next.js application (see frontend/README.md)
+docs/              Project documentation (git workflow)
 .github/           GitHub workflows & templates
 ```
 
@@ -92,9 +94,11 @@ Example:
 ### Clone repository
 
 ```bash
-git clone git@github.com:<organization>/tactica_ai.git
-cd tactica_ai
+git clone git@github.com:Bootcamp2OlaClass/tactica_ai_frontend.git
+cd tactica_ai_frontend/frontend
 ```
+
+See `frontend/README.md` for the actual run/build/test steps — the app itself lives in that subdirectory, not the repo root.
 
 ### Create a feature branch
 
@@ -122,13 +126,9 @@ develop → main
 
 ## Documentation
 
-- Git Workflow
-- Architecture
-- API Documentation
-- Product Requirements
-- Tech Stack
-
-All documentation is located in the `docs/` directory.
+- `docs/git-workflow.md` — this repo's branching/PR conventions.
+- `frontend/README.md` — how to run this app locally (env vars, scripts).
+- System architecture, API reference, database schema, RAG design, document pipeline, deployment, and security documentation all live in the [backend repo](https://github.com/Bootcamp2OlaClass/tactica_ai_backend)'s `docs/` directory — not duplicated here, to avoid two copies drifting out of sync.
 
 ---
 

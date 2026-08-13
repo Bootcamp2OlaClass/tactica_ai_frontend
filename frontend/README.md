@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tactica AI Frontend
+
+Next.js (App Router) frontend for **Tactica AI**, an AI-powered academic planning platform. See the [backend repo](https://github.com/Bootcamp2OlaClass/tactica_ai_backend) for the API this app talks to, and its `docs/ARCHITECTURE.md` for the full system design.
 
 ## Getting Started
 
-First, run the development server:
+Requires the backend API running separately (see the backend repo's own README) — this app has no functionality without it.
 
 ```bash
+cp .env.example .env
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Required | Purpose |
+|---|---|---|
+| `NEXT_PUBLIC_API_BASE_URL` | Yes | Base URL of the backend API. Inlined into the JS bundle at build time (Next.js only exposes `NEXT_PUBLIC_*` vars to the browser, and does so at build, not at runtime) — set correctly *before* `npm run build`, not just at container start. |
+| `E2E_BASE_URL` | No | Only used by Playwright (`npm run test:e2e`) to point at a frontend server other than `http://localhost:3000`. |
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command | Does |
+|---|---|
+| `npm run dev` | Start the dev server. |
+| `npm run build` | Production build. |
+| `npm run start` | Serve a production build. |
+| `npm run lint` | ESLint. |
+| `npm run test` | Vitest (unit/component tests). |
+| `npm run test:e2e` | Playwright — requires a live backend + frontend running (see `e2e/critical-path.spec.ts`'s header comment for exactly what's covered). |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Auth model
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+In-memory access token + httpOnly refresh cookie (never `localStorage`), silent refresh on load via `AuthGuard`. See `lib/api/client.ts`.
 
-## Deploy on Vercel
+## Testing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Vitest + React Testing Library for units/components. Playwright for E2E — currently covers the deterministic core of the critical path (register → create semester → sign out → log back in → sign out); document upload/processing and the AI features are out of scope for the current E2E pass (see the backend's `docs/DEPLOYMENT.md` for why).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## CI
+
+`.github/workflows/frontend-ci.yml` — `npm ci`, lint, typecheck, test, build. Runs on PRs/pushes to `main`/`develop`.
