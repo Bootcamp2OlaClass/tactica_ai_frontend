@@ -35,3 +35,12 @@ export async function downloadDocument(documentId: number, fallbackFileName: str
 export async function deleteDocument(documentId: number): Promise<void> {
   await authenticatedApiRequest<void>(`${BASE_PATH}/${documentId}`, { method: "DELETE" });
 }
+
+export async function getDocument(documentId: number): Promise<CourseDocument> {
+  const raw = await authenticatedApiRequest<RawDocument>(`${BASE_PATH}/${documentId}`);
+  return mapDocument(raw);
+}
+
+export async function reprocessDocument(documentId: number): Promise<void> {
+  await authenticatedApiRequest<void>(`${BASE_PATH}/${documentId}/reprocess`, { method: "POST" });
+}

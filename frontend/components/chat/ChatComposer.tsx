@@ -31,9 +31,9 @@ export function ChatComposer({
   }
 
   return (
-    <div className="flex items-end gap-2 border-t border-[#dedee9] bg-white px-4 py-3 sm:px-6">
+    <div className="flex items-end gap-2 border-t border-[#dedee9] bg-white px-4 py-3 dark:border-[#2d2d38] dark:bg-[#1b1b23] sm:px-6">
       <textarea
-        aria-label="Message the Study Coach"
+        aria-label="Message the Penguin Coach"
         value={value}
         onChange={(event) => setValue(event.target.value.slice(0, MAX_MESSAGE_LENGTH))}
         onKeyDown={handleKeyDown}

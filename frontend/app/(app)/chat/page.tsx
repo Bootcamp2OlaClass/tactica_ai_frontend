@@ -24,9 +24,9 @@ export default function ChatPage() {
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col">
-      <PageHeader title="Study Coach" description="Ask about deadlines, syllabus policies, or your courses." />
+      <PageHeader title="Penguin Coach" description="Ask about deadlines, syllabus policies, or your courses." />
 
-      <div className="flex h-[calc(100vh-14rem)] min-h-[420px] overflow-hidden rounded-2xl border border-[#dedee9] bg-white">
+      <div className="flex h-[calc(100vh-14rem)] min-h-[420px] overflow-hidden rounded-2xl border border-[#dedee9] bg-white dark:border-[#2d2d38] dark:bg-[#1b1b23]">
         <div className="hidden sm:block">
           <ConversationSidebar
             conversations={conversations}

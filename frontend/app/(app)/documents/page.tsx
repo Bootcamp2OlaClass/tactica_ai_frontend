@@ -13,6 +13,7 @@ import { Select } from "@/components/ui/Select";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useCourses } from "@/hooks/useCourses";
 import { useCourseDocuments } from "@/hooks/useDocuments";
+import { useDocumentStatusPolling } from "@/hooks/useDocumentStatusPolling";
 import { getApiErrorMessage } from "@/lib/api/client";
 import { uploadCourseDocument } from "@/services/document.service";
 import type { DocumentType } from "@/types/document";
@@ -23,6 +24,8 @@ function DocumentsPageContent() {
   const courses = useCourses({ pageSize: 100 });
   const documents = useCourseDocuments(courseId ? Number(courseId) : null);
   const { showToast } = useToast();
+
+  useDocumentStatusPolling(documents.status === "success" ? documents.data.items : undefined, documents.reload);
 
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -50,9 +53,9 @@ function DocumentsPageContent() {
       <PageHeader title="Documents" description="Upload and manage PDFs for each course." />
 
       {hasNoCourses && (
-        <div className="rounded-xl border border-[#dedee9] bg-white px-4 py-3 text-sm text-[#696977]">
+        <div className="rounded-xl border border-[#dedee9] bg-white px-4 py-3 text-sm text-[#696977] dark:border-[#2d2d38] dark:bg-[#1b1b23] dark:text-[#9797a6]">
           Create a course first — documents belong to a course.{" "}
-          <Link href="/courses" className="font-semibold text-[#315bd8] hover:underline">
+          <Link href="/courses" className="font-semibold text-[#315bd8] hover:underline dark:text-[#8aa4ff]">
             Go to courses →
           </Link>
         </div>
@@ -71,7 +74,7 @@ function DocumentsPageContent() {
       )}
 
       {!hasNoCourses && !courseId && (
-        <div className="rounded-2xl border border-dashed border-[#dedee9] bg-white px-6 py-14 text-center text-sm text-[#696977]">
+        <div className="rounded-2xl border border-dashed border-[#dedee9] bg-white px-6 py-14 text-center text-sm text-[#696977] dark:border-[#3a3a48] dark:bg-[#1b1b23] dark:text-[#9797a6]">
           Choose a course above to see and upload its documents.
         </div>
       )}

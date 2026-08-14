@@ -18,6 +18,7 @@ import { useCourses } from "@/hooks/useCourses";
 import { useTasks } from "@/hooks/useTasks";
 import { getApiErrorMessage, getApiFieldErrors } from "@/lib/api/client";
 import { toDatetimeLocalValue } from "@/lib/format";
+import { groupTasks } from "@/lib/tasks/group";
 import { completeTask, createTask, deleteTask, reopenTask, updateTask } from "@/services/task.service";
 import type { Task, TaskFormValues, TaskPriority, TaskStatus, TaskType } from "@/types/task";
 
@@ -44,26 +45,6 @@ const TYPE_FILTER_OPTIONS: { value: TaskType; label: string }[] = [
   { value: "presentation", label: "Presentation" },
   { value: "other", label: "Other" },
 ];
-
-function isToday(iso: string): boolean {
-  const date = new Date(iso);
-  const now = new Date();
-  return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && date.getDate() === now.getDate();
-}
-
-function groupTasks(items: Task[]) {
-  const groups = { overdue: [] as Task[], today: [] as Task[], upcoming: [] as Task[], completed: [] as Task[], cancelled: [] as Task[] };
-
-  for (const task of items) {
-    if (task.status === "completed") groups.completed.push(task);
-    else if (task.status === "cancelled") groups.cancelled.push(task);
-    else if (task.isOverdue) groups.overdue.push(task);
-    else if (task.dueAt && isToday(task.dueAt)) groups.today.push(task);
-    else groups.upcoming.push(task);
-  }
-
-  return groups;
-}
 
 export default function TasksPage() {
   return (
@@ -215,7 +196,7 @@ function TasksPageContent() {
       />
 
       {hasNoCourses && (
-        <div className="mb-6 rounded-xl border border-[#dedee9] bg-white px-4 py-3 text-sm text-[#696977]">
+        <div className="mb-6 rounded-xl border border-[#dedee9] bg-white px-4 py-3 text-sm text-[#696977] dark:border-[#2d2d38] dark:bg-[#1b1b23] dark:text-[#9797a6]">
           Create a course first — tasks belong to a course.
         </div>
       )}
@@ -270,7 +251,7 @@ function TasksPageContent() {
           {sections.map(({ key, label }) =>
             groups[key].length > 0 ? (
               <section key={key}>
-                <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#92929e]">
+                <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#92929e] dark:text-[#6f6f7d]">
                   {label} ({groups[key].length})
                 </h2>
                 <ul className="space-y-3">

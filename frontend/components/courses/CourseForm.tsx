@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
+import { ColorPicker } from "@/components/ui/ColorPicker";
 import { FormField, formFieldInputClassName } from "@/components/ui/FormField";
 import { Select } from "@/components/ui/Select";
 import type { CourseFormValues, CourseStatus } from "@/types/course";
@@ -175,15 +176,11 @@ export function CourseForm({
           />
         </FormField>
 
-        <FormField id="course-color" label="Color" hint="Optional hex, e.g. #315BD8" error={errors.color}>
-          <input
-            id="course-color"
-            type="text"
+        <FormField id="course-color" label="Color" hint="Pick a color, or use custom for any hex" error={errors.color}>
+          <ColorPicker
             value={values.color}
-            onChange={(event) => setValues((v) => ({ ...v, color: event.target.value }))}
-            placeholder="#315BD8"
+            onChange={(hex) => setValues((v) => ({ ...v, color: hex }))}
             disabled={isSubmitting}
-            className={formFieldInputClassName}
           />
         </FormField>
       </div>

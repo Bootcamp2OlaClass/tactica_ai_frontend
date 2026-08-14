@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Tailwind v4 CSS-first dark variant: toggled by ThemeProvider adding/
+   removing `.dark` on <html>, not by `prefers-color-scheme` directly --
+   that keeps "System" vs. an explicit Light/Dark choice as one code path
+   (System just means "let JS mirror the OS query into this same class"). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #17171c;
@@ -10,6 +16,18 @@
   --border: #dedee9;
   --muted: #696977;
   --accent: #dce4ff;
+}
+
+.dark {
+  --background: #101014;
+  --foreground: #f2f2f5;
+  --primary: #6a8dff;
+  --primary-hover: #8aa4ff;
+  --surface: #18181f;
+  --surface-card: #1b1b23;
+  --border: #2d2d38;
+  --muted: #9797a6;
+  --accent: #22284a;
 }
 
 * {

@@ -25,9 +25,9 @@ export function MessageBubble({ message, onRetry }: { message: DisplayMessage; o
         <div
           className={`rounded-2xl px-4 py-3 text-sm leading-6 whitespace-pre-wrap ${
             isUser
-              ? "bg-[#315bd8] text-white"
-              : "border border-[#dedee9] bg-white text-[#17171c]"
-          } ${message.failed ? "border-red-300 bg-red-50 text-red-800" : ""}`}
+              ? "bg-[#315bd8] text-white dark:bg-[#4d6fe0]"
+              : "border border-[#dedee9] bg-white text-[#17171c] dark:border-[#2d2d38] dark:bg-[#1b1b23] dark:text-[#f2f2f5]"
+          } ${message.failed ? "border-red-300 bg-red-50 text-red-800 dark:border-red-800/60 dark:bg-red-900/30 dark:text-red-300" : ""}`}
         >
           {message.content}
           {message.pending && message.role === "ASSISTANT" && message.content === "" && (
@@ -40,14 +40,14 @@ export function MessageBubble({ message, onRetry }: { message: DisplayMessage; o
         </div>
 
         {!isUser && !message.pending && message.grounded === false && (
-          <p className="mt-1 text-xs text-[#9a6b1f]">⚠ Not grounded in your documents or course data.</p>
+          <p className="mt-1 text-xs text-[#9a6b1f] dark:text-amber-400">⚠ Not grounded in your documents or course data.</p>
         )}
 
         <CitationChips message={message} />
 
         {message.failed && (
           <div className="mt-1.5 flex items-center gap-2">
-            <span className="text-xs text-red-700">Couldn&apos;t send.</span>
+            <span className="text-xs text-red-700 dark:text-red-400">{message.failedReason ?? "Couldn't send."}</span>
             {onRetry && (
               <Button type="button" variant="ghost" className="!px-2 !py-1 text-xs" onClick={onRetry}>
                 Retry

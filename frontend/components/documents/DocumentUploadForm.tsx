@@ -67,9 +67,9 @@ export function DocumentUploadForm({ isSubmitting, serverError, onSubmit }: Docu
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3 rounded-2xl border border-[#dedee9] bg-white p-5 sm:flex-row sm:items-end">
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3 rounded-2xl border border-[#dedee9] bg-white p-5 dark:border-[#2d2d38] dark:bg-[#1b1b23] sm:flex-row sm:items-start">
       {serverError && (
-        <div role="alert" className="w-full rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 sm:order-first">
+        <div role="alert" className="w-full rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800/60 dark:bg-red-900/30 dark:text-red-300 sm:order-first">
           {serverError}
         </div>
       )}
@@ -82,7 +82,7 @@ export function DocumentUploadForm({ isSubmitting, serverError, onSubmit }: Docu
           accept="application/pdf"
           onChange={handleFileChange}
           disabled={isSubmitting}
-          className={`${formFieldInputClassName} file:mr-3 file:rounded-lg file:border-0 file:bg-[#f6f4ff] file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-[#315bd8]`}
+          className={`${formFieldInputClassName} file:mr-3 file:rounded-lg file:border-0 file:bg-[#f6f4ff] file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-[#315bd8] dark:file:bg-[#22284a] dark:file:text-[#a9bdff]`}
         />
       </FormField>
 
@@ -98,9 +98,11 @@ export function DocumentUploadForm({ isSubmitting, serverError, onSubmit }: Docu
         </FormField>
       </div>
 
-      <Button type="submit" isLoading={isSubmitting} className="sm:mb-0">
-        Upload
-      </Button>
+      <FormField id="document-upload-submit" label="">
+        <Button type="submit" isLoading={isSubmitting} className="mt-1.5 w-full sm:w-auto">
+          Upload
+        </Button>
+      </FormField>
     </form>
   );
 }

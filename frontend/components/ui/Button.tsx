@@ -4,11 +4,11 @@ type Variant = "primary" | "secondary" | "danger" | "ghost";
 
 const VARIANT_CLASSES: Record<Variant, string> = {
   primary:
-    "bg-[#315bd8] text-white hover:bg-[#284fc4] focus-visible:ring-[#315bd8] disabled:bg-[#315bd8]/60",
+    "bg-[#315bd8] text-white hover:bg-[#284fc4] focus-visible:ring-[#315bd8] disabled:bg-[#315bd8]/60 dark:bg-[#4d6fe0] dark:hover:bg-[#6a8dff]",
   secondary:
-    "border border-[#cfd2e3] bg-white text-[#34343c] hover:border-[#aeb3cf] hover:bg-[#f6f4ff] focus-visible:ring-[#315bd8]",
-  danger: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600 disabled:bg-red-400",
-  ghost: "text-[#454550] hover:bg-[#f6f4ff] focus-visible:ring-[#315bd8]",
+    "border border-[#cfd2e3] bg-white text-[#34343c] hover:border-[#aeb3cf] hover:bg-[#f6f4ff] focus-visible:ring-[#315bd8] dark:border-[#3a3a48] dark:bg-[#1b1b23] dark:text-[#e5e5eb] dark:hover:border-[#4c4c5c] dark:hover:bg-[#22222c]",
+  danger: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600 disabled:bg-red-400 dark:bg-red-500 dark:hover:bg-red-600",
+  ghost: "text-[#454550] hover:bg-[#f6f4ff] focus-visible:ring-[#315bd8] dark:text-[#c7c7d1] dark:hover:bg-[#22222c]",
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

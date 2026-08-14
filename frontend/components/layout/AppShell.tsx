@@ -11,16 +11,20 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: "🏠" },
   { href: "/semesters", label: "Semesters", icon: "🗓️" },
   { href: "/courses", label: "Courses", icon: "📚" },
-  { href: "/tasks", label: "Tasks", icon: "✅" },
   { href: "/documents", label: "Documents", icon: "📄" },
-  { href: "/chat", label: "Study Coach", icon: "💬" },
+  { href: "/chat", label: "Penguin Coach", icon: "🐧" },
   { href: "/recovery-plan", label: "Recovery Plan", icon: "🧭" },
   { href: "/calendar", label: "Calendar", icon: "📅" },
-  { href: "/notifications", label: "Notifications", icon: "🔔" },
+  { href: "/settings", label: "Settings", icon: "⚙️" },
 ];
 
-function isActive(pathname: string, href: string): boolean {
-  return href === "/dashboard" ? pathname === href : pathname.startsWith(href);
+export function isActive(pathname: string, href: string): boolean {
+  if (href === "/dashboard") return pathname === href;
+  // Segment-boundary match, not a raw prefix match: "/courses" must not
+  // light up for an unrelated route that merely starts with the same
+  // characters (e.g. a hypothetical "/courses-archive"), only for itself
+  // or an actual sub-route ("/courses/42").
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
@@ -35,7 +39,9 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
             onClick={onNavigate}
             aria-current={active ? "page" : undefined}
             className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
-              active ? "bg-[#315bd8] text-white" : "text-[#454550] hover:bg-[#f6f4ff]"
+              active
+                ? "bg-[#315bd8] text-white dark:bg-[#4d6fe0]"
+                : "text-[#454550] hover:bg-[#f6f4ff] dark:text-[#c7c7d1] dark:hover:bg-[#22222c]"
             }`}
           >
             <span aria-hidden="true">{item.icon}</span>
@@ -52,28 +58,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#f6f4ff] text-[#17171c]">
-      <header className="flex items-center justify-between border-b border-[#dedee9] bg-white px-4 py-3 sm:hidden">
-        <span className="text-sm font-semibold text-[#315bd8]">Tactica AI</span>
+    <div className="min-h-screen bg-[#f6f4ff] text-[#17171c] dark:bg-[#101014] dark:text-[#f2f2f5]">
+      <header className="flex items-center justify-between border-b border-[#dedee9] bg-white px-4 py-3 dark:border-[#2d2d38] dark:bg-[#1b1b23] sm:hidden">
+        <span className="text-sm font-semibold text-[#315bd8] dark:text-[#8aa4ff]">Tactica AI</span>
         <button
           type="button"
           onClick={() => setIsMobileNavOpen((open) => !open)}
           aria-expanded={isMobileNavOpen}
           aria-controls="mobile-nav"
           aria-label="Toggle navigation menu"
-          className="rounded-lg p-2 text-[#34343c] hover:bg-[#f6f4ff] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#315bd8]"
+          className="rounded-lg p-2 text-[#34343c] hover:bg-[#f6f4ff] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#315bd8] dark:text-[#e5e5eb] dark:hover:bg-[#22222c]"
         >
           {isMobileNavOpen ? "✕" : "☰"}
         </button>
       </header>
 
       {isMobileNavOpen && (
-        <div id="mobile-nav" className="border-b border-[#dedee9] bg-white px-4 py-4 sm:hidden">
+        <div id="mobile-nav" className="border-b border-[#dedee9] bg-white px-4 py-4 dark:border-[#2d2d38] dark:bg-[#1b1b23] sm:hidden">
           <NavLinks pathname={pathname} onNavigate={() => setIsMobileNavOpen(false)} />
           <button
             type="button"
             onClick={logout}
-            className="mt-3 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#454550] hover:bg-[#f6f4ff]"
+            className="mt-3 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#454550] hover:bg-[#f6f4ff] dark:text-[#c7c7d1] dark:hover:bg-[#22222c]"
           >
             <span aria-hidden="true">↪</span>
             Sign out
@@ -84,8 +90,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <EmailVerificationBanner />
 
       <div className="mx-auto flex max-w-7xl">
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-[#dedee9] bg-white px-4 py-6 sm:flex">
-          <div className="px-2 text-sm font-semibold text-[#315bd8]">Tactica AI</div>
+        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-[#dedee9] bg-white px-4 py-6 dark:border-[#2d2d38] dark:bg-[#1b1b23] sm:flex">
+          <div className="px-2 text-sm font-semibold text-[#315bd8] dark:text-[#8aa4ff]">Tactica AI</div>
 
           <div className="mt-8 flex-1">
             <NavLinks pathname={pathname} />
@@ -94,7 +100,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <button
             type="button"
             onClick={logout}
-            className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#454550] transition hover:bg-[#f6f4ff]"
+            className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#454550] transition hover:bg-[#f6f4ff] dark:text-[#c7c7d1] dark:hover:bg-[#22222c]"
           >
             <span aria-hidden="true">↪</span>
             Sign out

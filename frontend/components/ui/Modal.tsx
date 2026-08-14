@@ -26,10 +26,10 @@ export function Modal({ title, onClose, children }: ModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={headingId}
-        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
+        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl dark:bg-[#1b1b23]"
       >
         <div className="mb-5 flex items-center justify-between">
-          <h2 id={headingId} className="text-lg font-semibold text-[#17171c]">
+          <h2 id={headingId} className="text-lg font-semibold text-[#17171c] dark:text-[#f2f2f5]">
             {title}
           </h2>
 
@@ -37,7 +37,7 @@ export function Modal({ title, onClose, children }: ModalProps) {
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="rounded-lg p-1.5 text-[#696977] transition hover:bg-[#f6f4ff] hover:text-[#17171c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#315bd8]"
+            className="rounded-lg p-1.5 text-[#696977] transition hover:bg-[#f6f4ff] hover:text-[#17171c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#315bd8] dark:text-[#9797a6] dark:hover:bg-[#22222c] dark:hover:text-[#f2f2f5]"
           >
             ✕
           </button>
