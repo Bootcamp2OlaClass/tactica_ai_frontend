@@ -17,9 +17,9 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 const VARIANT_STYLES: Record<ToastVariant, string> = {
-  success: "border-emerald-200 bg-emerald-50 text-emerald-800",
-  error: "border-red-200 bg-red-50 text-red-700",
-  info: "border-[#dedee9] bg-white text-[#17171c]",
+  success: "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800/60 dark:bg-emerald-900/40 dark:text-emerald-300",
+  error: "border-red-200 bg-red-50 text-red-700 dark:border-red-800/60 dark:bg-red-900/40 dark:text-red-300",
+  info: "border-[#dedee9] bg-white text-[#17171c] dark:border-[#3a3a48] dark:bg-[#1b1b23] dark:text-[#f2f2f5]",
 };
 
 let nextToastId = 1;

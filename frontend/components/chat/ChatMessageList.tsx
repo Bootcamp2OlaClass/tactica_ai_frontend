@@ -23,7 +23,7 @@ export function ChatMessageList({
   if (messages.length === 0) {
     return (
       <EmptyState
-        title="Ask your Study Coach anything"
+        title="Ask your Penguin Coach anything"
         description="Questions are answered from your own uploaded course documents and your semester/course/task data — the coach says so honestly when it doesn't know."
       />
     );

@@ -157,6 +157,24 @@ export async function getCurrentUser(): Promise<CurrentUser> {
   };
 }
 
+export async function updateProfile(fullName: string): Promise<CurrentUser> {
+  const data = await authenticatedApiRequest<{
+    id: number;
+    email: string;
+    full_name: string;
+    role: string;
+    email_verified: boolean;
+  }>("/auth/me", { method: "PATCH", json: { full_name: fullName } });
+
+  return {
+    id: data.id,
+    email: data.email,
+    fullName: data.full_name,
+    role: data.role,
+    emailVerified: data.email_verified,
+  };
+}
+
 export async function requestPasswordReset(email: string): Promise<void> {
   await fetch(`${getApiBaseUrl()}/auth/password-reset/request`, {
     method: "POST",

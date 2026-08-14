@@ -39,8 +39,12 @@ export default function RecoveryPlanPage() {
       {plan.status === "success" && plan.data.items.length > 0 && (
         <div>
           {plan.data.recommendationsUnavailableReason && (
-            <div className="mb-6 rounded-xl border border-[#f0e4c8] bg-[#fdf8ec] px-4 py-3 text-sm text-[#7a5f1f]">
-              Coach notes aren&apos;t included this time: {plan.data.recommendationsUnavailableReason}
+            <div
+              role="status"
+              className="mb-6 rounded-xl border border-[#f0e4c8] bg-[#fdf8ec] px-4 py-3 text-sm text-[#7a5f1f] dark:border-amber-800/50 dark:bg-amber-900/20 dark:text-amber-300"
+            >
+              Coach notes aren&apos;t available this time, but the order below is still based on your real deadlines,
+              priorities, and workload.
             </div>
           )}
 

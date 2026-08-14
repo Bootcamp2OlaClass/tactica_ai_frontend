@@ -1,5 +1,5 @@
 export function Skeleton({ className = "" }: { className?: string }) {
-  return <div aria-hidden="true" className={`animate-pulse rounded-lg bg-[#e8e7f2] ${className}`} />;
+  return <div aria-hidden="true" className={`animate-pulse rounded-lg bg-[#e8e7f2] dark:bg-[#26262f] ${className}`} />;
 }
 
 export function ListSkeleton({ rows = 4 }: { rows?: number }) {

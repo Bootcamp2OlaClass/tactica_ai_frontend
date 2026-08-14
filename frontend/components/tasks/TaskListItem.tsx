@@ -79,15 +79,15 @@ export function TaskListItem({ task, course, isBusy, onEdit, onDelete, onComplet
   const canReopen = task.status === "completed" || task.status === "cancelled";
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-[#dedee9] bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 rounded-2xl border border-[#dedee9] bg-white p-5 dark:border-[#2d2d38] dark:bg-[#1b1b23] sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <h3 className="text-sm font-semibold text-[#17171c]">{task.title}</h3>
+          <h3 className="text-sm font-semibold text-[#17171c] dark:text-[#f2f2f5]">{task.title}</h3>
           <TaskStatusBadge status={task.status} />
           <TaskPriorityBadge priority={task.priority} />
           {task.isOverdue && <OverdueBadge />}
         </div>
-        <p className="mt-1 text-xs text-[#696977]">
+        <p className="mt-1 text-xs text-[#696977] dark:text-[#9797a6]">
           {course ? `${course.courseCode} — ${course.name}` : `Course #${task.courseId}`}
           {task.dueAt ? ` · Due ${formatDateTime(task.dueAt)}` : " · No due date"}
         </p>

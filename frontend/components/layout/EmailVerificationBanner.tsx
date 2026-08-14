@@ -28,7 +28,7 @@ export function EmailVerificationBanner() {
   return (
     <div
       role="status"
-      className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-900 sm:px-8 lg:px-10"
+      className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-900 dark:border-amber-800/60 dark:bg-amber-900/30 dark:text-amber-200 sm:px-8 lg:px-10"
     >
       <span>
         Please verify your email address ({data.email}) to secure your account.
@@ -40,7 +40,7 @@ export function EmailVerificationBanner() {
         type="button"
         onClick={handleResend}
         disabled={resendState === "sending" || resendState === "sent"}
-        className="shrink-0 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-900 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
+        className="shrink-0 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-900 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-amber-700 dark:bg-transparent dark:text-amber-200 dark:hover:bg-amber-900/40"
       >
         {resendState === "sending" ? "Sending..." : resendState === "sent" ? "Sent" : "Resend email"}
       </button>

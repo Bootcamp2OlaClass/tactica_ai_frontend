@@ -163,6 +163,12 @@ export function getApiErrorMessage(error: unknown, fallback = "Something went wr
     if (error.status === 403) return "You don't have permission to do that.";
     if (error.status === 404) return "That item couldn't be found — it may have been deleted.";
     if (error.status === 409) return error.message || "That conflicts with existing data.";
+    // 503 today only comes from AI features (chat) whose provider isn't
+    // configured/reachable -- the raw detail (e.g. "LLM_PROVIDER not set")
+    // is a server-config fact, not something an end user can act on, so it
+    // stays out of the user-facing message here (still visible in the
+    // console/network tab for whoever's debugging the deployment).
+    if (error.status === 503) return "This AI feature isn't available right now. Please try again later.";
     if (error.status >= 500) return "The server ran into a problem. Please try again shortly.";
     return error.message || fallback;
   }

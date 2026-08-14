@@ -10,7 +10,7 @@ import type { ChatMessage, Conversation } from "@/types/chat";
 // (pending) or the turn failed before/during the stream (failed, offers
 // Retry). Never persisted as such; once a turn completes successfully the
 // real, server-assigned ChatMessage rows replace it.
-export type DisplayMessage = ChatMessage & { pending?: boolean; failed?: boolean };
+export type DisplayMessage = ChatMessage & { pending?: boolean; failed?: boolean; failedReason?: string };
 
 let localMessageIdCounter = -1;
 function nextLocalMessageId(): number {
@@ -130,14 +130,20 @@ export function useChat(initialConversationId: number | null = null) {
             reloadConversations();
           },
           onError: (error) => {
+            // The raw error (e.g. "LLM_PROVIDER not configured") is a
+            // server-config detail, not something the student can act on --
+            // log it for whoever's debugging, but show the sanitized,
+            // production-safe message (see getApiErrorMessage's 503 case)
+            // on the message bubble itself via the Retry affordance.
+            console.error("Chat send failed:", error);
+            const failedReason = getApiErrorMessage(error, "Couldn't send. Please try again.");
             setMessages((prev) =>
               prev
                 .filter((m) => m.id !== assistantPlaceholderId)
-                .map((m) => (m.id === userMessage.id ? { ...m, pending: false, failed: true } : m)),
+                .map((m) => (m.id === userMessage.id ? { ...m, pending: false, failed: true, failedReason } : m)),
             );
             setLastFailedMessage(trimmed);
             setIsSending(false);
-            void error; // surfaced via the failed-message Retry affordance, not a page-level error
           },
         },
         controller.signal,
