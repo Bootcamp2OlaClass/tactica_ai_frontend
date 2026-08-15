@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { ArrowLeft, Pencil, Plus, Trash2 } from "lucide-react";
+
 import { CourseForm } from "@/components/courses/CourseForm";
 import { CourseStatusBadge } from "@/components/courses/CourseStatusBadge";
 import { SemesterForm } from "@/components/semesters/SemesterForm";
@@ -132,8 +134,9 @@ export default function SemesterDetailPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <Link href="/semesters" className="text-sm font-medium text-[#315bd8] hover:underline">
-        ← All semesters
+      <Link href="/semesters" className="inline-flex items-center gap-1 text-sm font-medium text-[#315bd8] hover:underline">
+        <ArrowLeft size={14} strokeWidth={2} aria-hidden="true" />
+        All semesters
       </Link>
 
       <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
@@ -156,9 +159,11 @@ export default function SemesterDetailPage() {
             Roadmap
           </Link>
           <Button variant="secondary" onClick={() => setIsEditOpen(true)}>
+            <Pencil size={16} strokeWidth={1.8} aria-hidden="true" />
             Edit
           </Button>
-          <Button variant="danger" onClick={() => setIsDeleteOpen(true)}>
+          <Button variant="danger" onClick={() => setIsDeleteOpen(true)} aria-label={`Delete semester "${data.name}"`}>
+            <Trash2 size={16} strokeWidth={1.8} aria-hidden="true" />
             Delete
           </Button>
         </div>
@@ -166,7 +171,10 @@ export default function SemesterDetailPage() {
 
       <div className="mt-10 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-[#17171c]">Courses</h2>
-        <Button onClick={() => setIsAddCourseOpen(true)}>+ Add course</Button>
+        <Button onClick={() => setIsAddCourseOpen(true)}>
+          <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+          Add course
+        </Button>
       </div>
 
       <div className="mt-4">
@@ -176,7 +184,12 @@ export default function SemesterDetailPage() {
           <EmptyState
             title="No courses in this semester yet"
             description="Add a course to start tracking its tasks and documents."
-            action={<Button onClick={() => setIsAddCourseOpen(true)}>+ Add course</Button>}
+            action={
+              <Button onClick={() => setIsAddCourseOpen(true)}>
+                <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+                Add course
+              </Button>
+            }
           />
         )}
         {courses.status === "success" && courses.data.items.length > 0 && (
@@ -203,7 +216,8 @@ export default function SemesterDetailPage() {
                     >
                       View
                     </Link>
-                    <Button variant="danger" onClick={() => setPendingDeleteCourse(course)}>
+                    <Button variant="danger" onClick={() => setPendingDeleteCourse(course)} aria-label={`Delete course "${course.name}"`}>
+                      <Trash2 size={16} strokeWidth={1.8} aria-hidden="true" />
                       Delete
                     </Button>
                   </div>

@@ -27,7 +27,7 @@ test("register -> create semester -> sign out -> log back in -> sign out", async
   await expect(page).toHaveURL(/\/dashboard/);
 
   await page.goto("/semesters");
-  await page.getByRole("button", { name: "+ New semester" }).click();
+  await page.getByRole("button", { name: "New semester" }).first().click();
 
   const semesterName = `E2E Semester ${Date.now()}`;
   await page.getByLabel("Name").fill(semesterName);

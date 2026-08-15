@@ -1,10 +1,17 @@
+import { AlertTriangle } from "lucide-react";
+
 import type { DashboardTask } from "@/types/dashboard";
 import { formatDate, relativeDueDate } from "./dashboard-formatters";
 
 export function OverdueTasks({ tasks }: { tasks: DashboardTask[] }) {
   return (
     <section className="rounded-2xl border border-[#ead3ce] bg-[#fffaf8] p-6 lg:col-span-5" aria-labelledby="overdue-heading">
-      <div className="flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#c85a45] text-xs font-bold text-[#a83b29]" aria-hidden="true">!</span><h2 id="overdue-heading" className="text-lg font-semibold tracking-[-0.025em]">Overdue tasks</h2></div>
+      <div className="flex items-center gap-2">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#c85a45] text-[#a83b29]" aria-hidden="true">
+          <AlertTriangle size={13} strokeWidth={2.2} />
+        </span>
+        <h2 id="overdue-heading" className="text-lg font-semibold tracking-[-0.025em]">Overdue tasks</h2>
+      </div>
       {tasks.length ? (
         <ul className="mt-4 space-y-3">
           {tasks.map((task) => (

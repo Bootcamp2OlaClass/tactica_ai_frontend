@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 
 import { setAuthenticationToken } from "@/lib/api/client";
 import {
@@ -243,7 +244,7 @@ export function RegisterForm() {
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#315bd8] px-4 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#284fc4] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#315bd8] focus-visible:ring-offset-2 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
         >
           {isSubmitting ? "Creating account..." : "Create account"}
-          {!isSubmitting && <span aria-hidden="true">→</span>}
+          {!isSubmitting && <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />}
         </button>
       </form>
 

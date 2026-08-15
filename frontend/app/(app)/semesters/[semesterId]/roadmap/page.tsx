@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -43,8 +44,9 @@ export default function SemesterRoadmapPage() {
         title="Semester Roadmap"
         description="A week-by-week plan grounded in your real courses, tasks, and deadlines."
         action={
-          <Link href={`/semesters/${semesterId}`} className="text-sm font-semibold text-[#315bd8] hover:underline">
-            ← Back to semester
+          <Link href={`/semesters/${semesterId}`} className="inline-flex items-center gap-1 text-sm font-semibold text-[#315bd8] hover:underline">
+            <ArrowLeft size={14} strokeWidth={2} aria-hidden="true" />
+            Back to semester
           </Link>
         }
       />

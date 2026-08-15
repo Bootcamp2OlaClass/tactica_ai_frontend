@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ArrowRight, Plus } from "lucide-react";
 
 import { CourseForm } from "@/components/courses/CourseForm";
 import { CourseStatusBadge } from "@/components/courses/CourseStatusBadge";
@@ -83,7 +84,8 @@ export default function CoursesPage() {
         description="Every course across your semesters."
         action={
           <Button onClick={() => setIsCreateOpen(true)} disabled={hasNoSemesters}>
-            + New course
+            <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+            New course
           </Button>
         }
       />
@@ -91,8 +93,9 @@ export default function CoursesPage() {
       {hasNoSemesters && (
         <div className="mb-6 rounded-xl border border-[#dedee9] bg-white px-4 py-3 text-sm text-[#696977]">
           Create a semester first — courses belong to a semester.{" "}
-          <Link href="/semesters" className="font-semibold text-[#315bd8] hover:underline">
-            Go to semesters →
+          <Link href="/semesters" className="inline-flex items-center gap-1 font-semibold text-[#315bd8] hover:underline">
+            Go to semesters
+            <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
           </Link>
         </div>
       )}
@@ -118,7 +121,12 @@ export default function CoursesPage() {
         <EmptyState
           title="No courses found"
           description={semesterFilter ? "No courses in this semester yet." : "Add your first course to start tracking tasks and documents."}
-          action={<Button onClick={() => setIsCreateOpen(true)}>+ New course</Button>}
+          action={
+            <Button onClick={() => setIsCreateOpen(true)}>
+              <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+              New course
+            </Button>
+          }
         />
       )}
 

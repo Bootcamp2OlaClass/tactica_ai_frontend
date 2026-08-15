@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 
 import { DocumentList } from "@/components/documents/DocumentList";
 import { DocumentUploadForm } from "@/components/documents/DocumentUploadForm";
@@ -55,8 +56,9 @@ function DocumentsPageContent() {
       {hasNoCourses && (
         <div className="rounded-xl border border-[#dedee9] bg-white px-4 py-3 text-sm text-[#696977] dark:border-[#2d2d38] dark:bg-[#1b1b23] dark:text-[#9797a6]">
           Create a course first — documents belong to a course.{" "}
-          <Link href="/courses" className="font-semibold text-[#315bd8] hover:underline dark:text-[#8aa4ff]">
-            Go to courses →
+          <Link href="/courses" className="inline-flex items-center gap-1 font-semibold text-[#315bd8] hover:underline dark:text-[#8aa4ff]">
+            Go to courses
+            <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
           </Link>
         </div>
       )}

@@ -1,4 +1,5 @@
 import type {
+  AnswerMode,
   ChatCitation,
   ChatMessage,
   ChatStreamDoneEvent,
@@ -19,6 +20,7 @@ export interface RawChatMessage {
   content: string;
   grounded: boolean | null;
   citations: RawChatCitation[] | null;
+  answer_mode: AnswerMode | null;
   created_at: string;
 }
 
@@ -47,6 +49,7 @@ export interface RawChatStreamDoneEvent {
   conversation_id: number;
   message_id: number;
   grounded: boolean | null;
+  answer_mode: AnswerMode | null;
   citations: RawChatCitation[];
 }
 
@@ -62,6 +65,7 @@ export function mapChatMessage(raw: RawChatMessage): ChatMessage {
     content: raw.content,
     grounded: raw.grounded,
     citations: raw.citations ? raw.citations.map(mapCitation) : null,
+    answerMode: raw.answer_mode,
     createdAt: raw.created_at,
   };
 }
@@ -100,6 +104,7 @@ export function mapChatStreamDoneEvent(raw: RawChatStreamDoneEvent): ChatStreamD
     conversationId: raw.conversation_id,
     messageId: raw.message_id,
     grounded: raw.grounded,
+    answerMode: raw.answer_mode,
     citations: raw.citations.map(mapCitation),
   };
 }

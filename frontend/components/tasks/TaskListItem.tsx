@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CalendarPlus, Check, Pencil, RotateCcw, Trash2, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -61,6 +62,7 @@ function CalendarSyncAction({ taskId }: { taskId: number }) {
       <div className="flex items-center gap-1.5">
         <Badge tone="green">On calendar</Badge>
         <Button variant="ghost" className="!px-2 !py-1 text-xs" onClick={handleUnsync} isLoading={isBusy}>
+          {!isBusy && <X size={14} strokeWidth={1.8} aria-hidden="true" />}
           Remove
         </Button>
       </div>
@@ -69,6 +71,7 @@ function CalendarSyncAction({ taskId }: { taskId: number }) {
 
   return (
     <Button variant="secondary" onClick={handleSync} isLoading={isBusy}>
+      {!isBusy && <CalendarPlus size={16} strokeWidth={1.8} aria-hidden="true" />}
       Add to calendar
     </Button>
   );
@@ -79,38 +82,55 @@ export function TaskListItem({ task, course, isBusy, onEdit, onDelete, onComplet
   const canReopen = task.status === "completed" || task.status === "cancelled";
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-[#dedee9] bg-white p-5 dark:border-[#2d2d38] dark:bg-[#1b1b23] sm:flex-row sm:items-center sm:justify-between">
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
+    // "@container" scopes the @sm: variants below to THIS card's own
+    // rendered width, not the viewport. The card renders both in a wide
+    // list (/tasks, ~5xl) and inside the Calendar page's narrow (20rem)
+    // Upcoming sidebar -- a viewport-based "sm:" breakpoint can't tell
+    // those apart, so at any browser width >= 640px it forced a
+    // side-by-side layout even inside the narrow sidebar, and the action
+    // buttons (flex-shrink-0) overflowed past the card's right edge
+    // instead of wrapping. Container queries make the row/column switch
+    // track the space actually available to the card.
+    <div className="@container">
+      <div className="flex flex-col gap-4 rounded-2xl border border-[#dedee9] bg-white p-5 dark:border-[#2d2d38] dark:bg-[#1b1b23] @sm:flex-row @sm:items-start @sm:justify-between">
+        <div className="min-w-0 space-y-2">
           <h3 className="text-sm font-semibold text-[#17171c] dark:text-[#f2f2f5]">{task.title}</h3>
-          <TaskStatusBadge status={task.status} />
-          <TaskPriorityBadge priority={task.priority} />
-          {task.isOverdue && <OverdueBadge />}
-        </div>
-        <p className="mt-1 text-xs text-[#696977] dark:text-[#9797a6]">
-          {course ? `${course.courseCode} — ${course.name}` : `Course #${task.courseId}`}
-          {task.dueAt ? ` · Due ${formatDateTime(task.dueAt)}` : " · No due date"}
-        </p>
-      </div>
 
-      <div className="flex shrink-0 flex-wrap items-center gap-2">
-        {task.dueAt && <CalendarSyncAction taskId={task.id} />}
-        {canComplete && (
-          <Button variant="secondary" onClick={onComplete} isLoading={isBusy}>
-            Complete
+          <div className="flex flex-wrap items-center gap-1.5">
+            <TaskStatusBadge status={task.status} />
+            <TaskPriorityBadge priority={task.priority} />
+            {task.isOverdue && <OverdueBadge />}
+          </div>
+
+          <p className="text-xs text-[#696977] dark:text-[#9797a6]">
+            {course ? `${course.courseCode} — ${course.name}` : `Course #${task.courseId}`}
+          </p>
+          <p className="text-xs text-[#696977] dark:text-[#9797a6]">{task.dueAt ? `Due ${formatDateTime(task.dueAt)}` : "No due date"}</p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 @sm:justify-end">
+          {task.dueAt && <CalendarSyncAction taskId={task.id} />}
+          {canComplete && (
+            <Button variant="secondary" onClick={onComplete} isLoading={isBusy}>
+              {!isBusy && <Check size={16} strokeWidth={1.8} aria-hidden="true" />}
+              Complete
+            </Button>
+          )}
+          {canReopen && (
+            <Button variant="secondary" onClick={onReopen} isLoading={isBusy}>
+              <RotateCcw size={16} strokeWidth={1.8} aria-hidden="true" />
+              Reopen
+            </Button>
+          )}
+          <Button variant="secondary" onClick={onEdit}>
+            <Pencil size={16} strokeWidth={1.8} aria-hidden="true" />
+            Edit
           </Button>
-        )}
-        {canReopen && (
-          <Button variant="secondary" onClick={onReopen} isLoading={isBusy}>
-            Reopen
+          <Button variant="danger" onClick={onDelete} aria-label={`Delete task "${task.title}"`}>
+            <Trash2 size={16} strokeWidth={1.8} aria-hidden="true" />
+            Delete
           </Button>
-        )}
-        <Button variant="secondary" onClick={onEdit}>
-          Edit
-        </Button>
-        <Button variant="danger" onClick={onDelete}>
-          Delete
-        </Button>
+        </div>
       </div>
     </div>
   );
