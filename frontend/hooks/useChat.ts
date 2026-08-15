@@ -78,6 +78,7 @@ export function useChat(initialConversationId: number | null = null) {
         content: trimmed,
         grounded: null,
         citations: null,
+        answerMode: null,
         createdAt: new Date().toISOString(),
         pending: true,
       };
@@ -89,6 +90,7 @@ export function useChat(initialConversationId: number | null = null) {
         content: "",
         grounded: null,
         citations: null,
+        answerMode: null,
         createdAt: new Date().toISOString(),
         pending: true,
       };
@@ -119,6 +121,7 @@ export function useChat(initialConversationId: number | null = null) {
                     content: accumulated,
                     grounded: final.grounded,
                     citations: final.citations,
+                    answerMode: final.answerMode,
                     createdAt: new Date().toISOString(),
                   };
                 }

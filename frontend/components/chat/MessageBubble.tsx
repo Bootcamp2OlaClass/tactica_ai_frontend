@@ -1,3 +1,5 @@
+import { AlertTriangle, FileText } from "lucide-react";
+
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import type { DisplayMessage } from "@/hooks/useChat";
@@ -9,7 +11,10 @@ function CitationChips({ message }: { message: DisplayMessage }) {
     <div className="mt-2 flex flex-wrap gap-1.5">
       {message.citations.map((citation, index) => (
         <Badge key={`${citation.chunkId}-${index}`} tone="blue">
-          📄 Source: document #{citation.documentId}
+          <span className="inline-flex items-center gap-1">
+            <FileText size={12} strokeWidth={2} aria-hidden="true" />
+            Source: document #{citation.documentId}
+          </span>
         </Badge>
       ))}
     </div>
@@ -39,8 +44,26 @@ export function MessageBubble({ message, onRetry }: { message: DisplayMessage; o
           )}
         </div>
 
-        {!isUser && !message.pending && message.grounded === false && (
-          <p className="mt-1 text-xs text-[#9a6b1f] dark:text-amber-400">⚠ Not grounded in your documents or course data.</p>
+        {/* GENERAL (no personal data needed, e.g. "Hi" or a concept
+            explanation) is the expected, common case for grounded=false --
+            showing a warning there would make every ordinary answer look
+            like something went wrong. Only MISSING_PERSONAL_CONTEXT (the
+            question needed the student's own data and Tactica didn't have
+            it) is worth flagging; an older persisted message from before
+            this field existed (answerMode null) falls back to the old
+            grounded-based check so history doesn't regress. */}
+        {!isUser &&
+          !message.pending &&
+          (message.answerMode
+            ? message.answerMode === "MISSING_PERSONAL_CONTEXT"
+            : message.grounded === false) && (
+            <p className="mt-1 flex items-center gap-1 text-xs text-[#9a6b1f] dark:text-amber-400">
+              <AlertTriangle size={13} strokeWidth={2} aria-hidden="true" />
+              Couldn&apos;t find this in your course data.
+            </p>
+          )}
+        {!isUser && !message.pending && message.answerMode === "GENERAL" && (
+          <p className="mt-1 text-xs text-[#92929e] dark:text-[#6f6f7d]">General knowledge</p>
         )}
 
         <CitationChips message={message} />

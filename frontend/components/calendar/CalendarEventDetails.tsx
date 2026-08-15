@@ -1,5 +1,7 @@
 "use client";
 
+import { Check, Pencil, RotateCcw, Trash2 } from "lucide-react";
+
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { OverdueBadge, TaskPriorityBadge, TaskStatusBadge } from "@/components/tasks/TaskBadges";
@@ -65,18 +67,22 @@ export function CalendarEventDetails({
         <div className="flex flex-wrap justify-end gap-2 border-t border-[#eceaf5] pt-4 dark:border-[#2d2d38]">
           {canComplete && (
             <Button variant="secondary" onClick={onComplete} isLoading={isBusy}>
+              {!isBusy && <Check size={16} strokeWidth={1.8} aria-hidden="true" />}
               Complete
             </Button>
           )}
           {canReopen && (
             <Button variant="secondary" onClick={onReopen} isLoading={isBusy}>
+              <RotateCcw size={16} strokeWidth={1.8} aria-hidden="true" />
               Reopen
             </Button>
           )}
           <Button variant="secondary" onClick={onEdit}>
+            <Pencil size={16} strokeWidth={1.8} aria-hidden="true" />
             Edit
           </Button>
-          <Button variant="danger" onClick={onDelete}>
+          <Button variant="danger" onClick={onDelete} aria-label={`Delete task "${item.title}"`}>
+            <Trash2 size={16} strokeWidth={1.8} aria-hidden="true" />
             Delete
           </Button>
         </div>

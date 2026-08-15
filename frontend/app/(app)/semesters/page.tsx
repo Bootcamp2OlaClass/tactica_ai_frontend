@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Plus, Trash2 } from "lucide-react";
 
 import { SemesterForm } from "@/components/semesters/SemesterForm";
 import { SemesterStatusBadge } from "@/components/semesters/SemesterStatusBadge";
@@ -70,7 +71,12 @@ export default function SemestersPage() {
       <PageHeader
         title="Semesters"
         description="Organize your academic terms and track which one is active."
-        action={<Button onClick={() => setIsCreateOpen(true)}>+ New semester</Button>}
+        action={
+          <Button onClick={() => setIsCreateOpen(true)}>
+            <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+            New semester
+          </Button>
+        }
       />
 
       {status === "loading" && <ListSkeleton rows={3} />}
@@ -79,7 +85,12 @@ export default function SemestersPage() {
         <EmptyState
           title="No semesters yet"
           description="Create your first semester to start organizing courses, tasks, and documents."
-          action={<Button onClick={() => setIsCreateOpen(true)}>+ New semester</Button>}
+          action={
+            <Button onClick={() => setIsCreateOpen(true)}>
+              <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+              New semester
+            </Button>
+          }
         />
       )}
 
@@ -105,7 +116,8 @@ export default function SemestersPage() {
                   >
                     View
                   </Link>
-                  <Button variant="danger" onClick={() => setPendingDelete(semester)}>
+                  <Button variant="danger" onClick={() => setPendingDelete(semester)} aria-label={`Delete semester "${semester.name}"`}>
+                    <Trash2 size={16} strokeWidth={1.8} aria-hidden="true" />
                     Delete
                   </Button>
                 </div>

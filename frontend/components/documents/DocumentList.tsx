@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Download, RotateCw, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -99,20 +100,23 @@ export function DocumentList({ documents, onChanged }: DocumentListProps) {
                 )}
               </div>
 
-              <div className="flex shrink-0 gap-2">
+              <div className="flex flex-wrap shrink-0 gap-2">
                 {document.processingStatus === "FAILED" && (
                   <Button
                     variant="secondary"
                     onClick={() => handleRetry(document)}
                     isLoading={retryingId === document.id}
                   >
+                    {retryingId !== document.id && <RotateCw size={16} strokeWidth={1.8} aria-hidden="true" />}
                     Retry
                   </Button>
                 )}
                 <Button variant="secondary" onClick={() => handleDownload(document)} isLoading={downloadingId === document.id}>
+                  {downloadingId !== document.id && <Download size={16} strokeWidth={1.8} aria-hidden="true" />}
                   Download
                 </Button>
-                <Button variant="danger" onClick={() => setPendingDelete(document)}>
+                <Button variant="danger" onClick={() => setPendingDelete(document)} aria-label={`Delete document "${document.originalFileName}"`}>
+                  <Trash2 size={16} strokeWidth={1.8} aria-hidden="true" />
                   Delete
                 </Button>
               </div>

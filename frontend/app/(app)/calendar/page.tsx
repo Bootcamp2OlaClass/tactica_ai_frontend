@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+
 import { AgendaSidePanel } from "@/components/calendar/AgendaSidePanel";
 import { CalendarEventDetails } from "@/components/calendar/CalendarEventDetails";
 import { GoogleCalendarIntegration } from "@/components/calendar/GoogleCalendarIntegration";
@@ -166,7 +168,8 @@ export default function CalendarPage() {
         action={
           activeTab === "calendar" ? (
             <Button onClick={() => setIsCreateOpen(true)} disabled={hasNoCourses}>
-              + New task
+              <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+              New task
             </Button>
           ) : undefined
         }
@@ -188,9 +191,9 @@ export default function CalendarPage() {
           {tasks.status === "error" && <ErrorState message={tasks.error ?? "Unable to load your calendar."} onRetry={tasks.reload} />}
 
           {tasks.status === "success" && (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_20rem]">
-              <div>
-                <div className="mb-4 flex items-center justify-between">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+              <div className="min-w-0">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                   <h2 className="text-lg font-semibold text-[#17171c] dark:text-[#f2f2f5]">{MONTH_LABEL_FORMATTER.format(currentMonth)}</h2>
                   <div className="flex gap-2">
                     <Button variant="secondary" onClick={() => setCurrentMonth(startOfMonth(new Date()))}>
@@ -199,16 +202,18 @@ export default function CalendarPage() {
                     <Button
                       variant="secondary"
                       aria-label="Previous month"
+                      className="!px-2.5"
                       onClick={() => setCurrentMonth((month) => new Date(month.getFullYear(), month.getMonth() - 1, 1))}
                     >
-                      ←
+                      <ChevronLeft size={18} strokeWidth={1.8} aria-hidden="true" />
                     </Button>
                     <Button
                       variant="secondary"
                       aria-label="Next month"
+                      className="!px-2.5"
                       onClick={() => setCurrentMonth((month) => new Date(month.getFullYear(), month.getMonth() + 1, 1))}
                     >
-                      →
+                      <ChevronRight size={18} strokeWidth={1.8} aria-hidden="true" />
                     </Button>
                   </div>
                 </div>
@@ -216,7 +221,7 @@ export default function CalendarPage() {
                 <MonthCalendar currentMonth={currentMonth} itemsByDate={itemsByDate} onSelectItem={setSelectedItem} />
               </div>
 
-              <aside>
+              <aside className="min-w-0">
                 <AgendaSidePanel
                   tasks={tasks.data.items}
                   courseById={courseById}

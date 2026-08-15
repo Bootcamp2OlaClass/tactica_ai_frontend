@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { ArrowLeft, Pencil, Plus, Trash2 } from "lucide-react";
 
 import { CourseForm } from "@/components/courses/CourseForm";
 import { CourseStatusBadge } from "@/components/courses/CourseStatusBadge";
@@ -156,8 +157,9 @@ export default function CourseDetailPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <Link href="/courses" className="text-sm font-medium text-[#315bd8] hover:underline">
-        ← All courses
+      <Link href="/courses" className="inline-flex items-center gap-1 text-sm font-medium text-[#315bd8] hover:underline">
+        <ArrowLeft size={14} strokeWidth={2} aria-hidden="true" />
+        All courses
       </Link>
 
       <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
@@ -181,9 +183,11 @@ export default function CourseDetailPage() {
 
         <div className="flex shrink-0 gap-2">
           <Button variant="secondary" onClick={() => setIsEditOpen(true)}>
+            <Pencil size={16} strokeWidth={1.8} aria-hidden="true" />
             Edit
           </Button>
-          <Button variant="danger" onClick={() => setIsDeleteOpen(true)}>
+          <Button variant="danger" onClick={() => setIsDeleteOpen(true)} aria-label={`Delete course "${data.name}"`}>
+            <Trash2 size={16} strokeWidth={1.8} aria-hidden="true" />
             Delete
           </Button>
         </div>
@@ -195,7 +199,10 @@ export default function CourseDetailPage() {
           <Link href={`/tasks?courseId=${courseId}`} className="text-sm font-medium text-[#315bd8] hover:underline">
             View all
           </Link>
-          <Button onClick={() => setIsAddTaskOpen(true)}>+ Add task</Button>
+          <Button onClick={() => setIsAddTaskOpen(true)}>
+            <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+            Add task
+          </Button>
         </div>
       </div>
 
@@ -203,7 +210,15 @@ export default function CourseDetailPage() {
         {tasks.status === "loading" && <ListSkeleton rows={2} />}
         {tasks.status === "error" && <ErrorState message={tasks.error ?? "Unable to load tasks."} onRetry={tasks.reload} />}
         {tasks.status === "success" && tasks.data.items.length === 0 && (
-          <EmptyState title="No tasks for this course yet" action={<Button onClick={() => setIsAddTaskOpen(true)}>+ Add task</Button>} />
+          <EmptyState
+            title="No tasks for this course yet"
+            action={
+              <Button onClick={() => setIsAddTaskOpen(true)}>
+                <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+                Add task
+              </Button>
+            }
+          />
         )}
         {tasks.status === "success" && tasks.data.items.length > 0 && (
           <ul className="space-y-3">
@@ -219,7 +234,8 @@ export default function CourseDetailPage() {
                   <p className="mt-1 text-xs text-[#696977]">{task.dueAt ? `Due ${formatDate(task.dueAt)}` : "No due date"}</p>
                 </div>
 
-                <Button variant="danger" onClick={() => setPendingDeleteTask(task)}>
+                <Button variant="danger" onClick={() => setPendingDeleteTask(task)} aria-label={`Delete task "${task.title}"`}>
+                  <Trash2 size={16} strokeWidth={1.8} aria-hidden="true" />
                   Delete
                 </Button>
               </li>

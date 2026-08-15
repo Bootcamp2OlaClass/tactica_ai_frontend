@@ -3,19 +3,33 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import {
+  BookOpen,
+  CalendarDays,
+  CalendarRange,
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  type LucideIcon,
+  Menu,
+  MessageCircle,
+  Settings,
+  Target,
+  X,
+} from "lucide-react";
 
 import { EmailVerificationBanner } from "@/components/layout/EmailVerificationBanner";
 import { logout } from "@/services/auth.service";
 
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: "🏠" },
-  { href: "/semesters", label: "Semesters", icon: "🗓️" },
-  { href: "/courses", label: "Courses", icon: "📚" },
-  { href: "/documents", label: "Documents", icon: "📄" },
-  { href: "/chat", label: "Penguin Coach", icon: "🐧" },
-  { href: "/recovery-plan", label: "Recovery Plan", icon: "🧭" },
-  { href: "/calendar", label: "Calendar", icon: "📅" },
-  { href: "/settings", label: "Settings", icon: "⚙️" },
+const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/semesters", label: "Semesters", icon: CalendarRange },
+  { href: "/courses", label: "Courses", icon: BookOpen },
+  { href: "/documents", label: "Documents", icon: FileText },
+  { href: "/chat", label: "Penguin Coach", icon: MessageCircle },
+  { href: "/recovery-plan", label: "Recovery Plan", icon: Target },
+  { href: "/calendar", label: "Calendar", icon: CalendarDays },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function isActive(pathname: string, href: string): boolean {
@@ -32,6 +46,7 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
     <nav aria-label="Primary" className="space-y-1">
       {NAV_ITEMS.map((item) => {
         const active = isActive(pathname, item.href);
+        const Icon = item.icon;
         return (
           <Link
             key={item.href}
@@ -44,7 +59,7 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
                 : "text-[#454550] hover:bg-[#f6f4ff] dark:text-[#c7c7d1] dark:hover:bg-[#22222c]"
             }`}
           >
-            <span aria-hidden="true">{item.icon}</span>
+            <Icon size={18} strokeWidth={1.8} className="shrink-0" aria-hidden="true" />
             {item.label}
           </Link>
         );
@@ -69,7 +84,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           aria-label="Toggle navigation menu"
           className="rounded-lg p-2 text-[#34343c] hover:bg-[#f6f4ff] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#315bd8] dark:text-[#e5e5eb] dark:hover:bg-[#22222c]"
         >
-          {isMobileNavOpen ? "✕" : "☰"}
+          {isMobileNavOpen ? <X size={20} strokeWidth={1.8} aria-hidden="true" /> : <Menu size={20} strokeWidth={1.8} aria-hidden="true" />}
         </button>
       </header>
 
@@ -81,7 +96,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             onClick={logout}
             className="mt-3 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#454550] hover:bg-[#f6f4ff] dark:text-[#c7c7d1] dark:hover:bg-[#22222c]"
           >
-            <span aria-hidden="true">↪</span>
+            <LogOut size={18} strokeWidth={1.8} className="shrink-0" aria-hidden="true" />
             Sign out
           </button>
         </div>
@@ -102,7 +117,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             onClick={logout}
             className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#454550] transition hover:bg-[#f6f4ff] dark:text-[#c7c7d1] dark:hover:bg-[#22222c]"
           >
-            <span aria-hidden="true">↪</span>
+            <LogOut size={18} strokeWidth={1.8} className="shrink-0" aria-hidden="true" />
             Sign out
           </button>
         </aside>

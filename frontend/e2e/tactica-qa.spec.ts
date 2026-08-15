@@ -29,7 +29,7 @@ test("full workflow: dashboard, sidebar state, color picker, calendar, chat, rec
 
   // --- Semester ---
   await page.goto("/semesters");
-  await page.getByRole("button", { name: "+ New semester" }).click();
+  await page.getByRole("button", { name: "New semester" }).first().click();
   const semesterName = `QA Semester ${Date.now()}`;
   await page.getByLabel("Name").fill(semesterName);
   await page.getByLabel("Start date").fill("2026-08-01");
@@ -42,13 +42,16 @@ test("full workflow: dashboard, sidebar state, color picker, calendar, chat, rec
 
   // --- Course, created via the color picker (not a raw hex field) ---
   // Both the page header and the (currently empty) course list's empty
-  // state render a "+ Add course" trigger -- either opens the same modal.
-  await page.getByRole("button", { name: "+ Add course" }).first().click();
-  await page.getByLabel("Course code").fill("CS201");
-  await page.getByLabel("Course name").fill("Algorithms");
-  await page.getByRole("button", { name: "Teal" }).click();
-  await expect(page.getByRole("button", { name: "Teal" })).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: "Add course", exact: true }).click();
+  // state render an "Add course" trigger -- either opens the same modal,
+  // whose own submit button shares that exact text, so it's scoped to the
+  // dialog once open to stay unambiguous.
+  await page.getByRole("button", { name: "Add course" }).first().click();
+  const addCourseDialog = page.getByRole("dialog");
+  await addCourseDialog.getByLabel("Course code").fill("CS201");
+  await addCourseDialog.getByLabel("Course name").fill("Algorithms");
+  await addCourseDialog.getByRole("button", { name: "Teal" }).click();
+  await expect(addCourseDialog.getByRole("button", { name: "Teal" })).toHaveAttribute("aria-pressed", "true");
+  await addCourseDialog.getByRole("button", { name: "Add course", exact: true }).click();
   const courseLink = page.getByRole("link", { name: /CS201 — Algorithms/ });
   await expect(courseLink).toBeVisible();
 
@@ -60,18 +63,22 @@ test("full workflow: dashboard, sidebar state, color picker, calendar, chat, rec
   await expect(page.getByRole("link", { name: "Semesters", exact: true })).not.toHaveAttribute("aria-current", "page");
 
   // --- Task, created from the course page ---
-  await page.getByRole("button", { name: "+ Add task" }).first().click();
-  await page.getByLabel("Title").fill("QA Homework 1");
+  await page.getByRole("button", { name: "Add task" }).first().click();
+  const addTaskDialog = page.getByRole("dialog");
+  await addTaskDialog.getByLabel("Title").fill("QA Homework 1");
   const today = new Date();
   const dueLocal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}T23:59`;
-  await page.getByLabel("Due").fill(dueLocal);
-  await page.getByRole("button", { name: "Add task", exact: true }).click();
+  await addTaskDialog.getByLabel("Due").fill(dueLocal);
+  await addTaskDialog.getByRole("button", { name: "Add task", exact: true }).click();
   await expect(page.getByText("QA Homework 1")).toBeVisible();
 
   // --- Calendar: the task appears (checked before completing it below) ---
   await page.goto("/calendar");
   await expect(page.getByRole("tab", { name: "My Calendar" })).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("button", { name: "QA Homework 1" })).toBeVisible();
+  // exact: true -- a "Delete task \"QA Homework 1\"" aria-label (added for
+  // screen-reader clarity on the Upcoming panel's Delete button) otherwise
+  // substring-matches this too.
+  await expect(page.getByRole("button", { name: "QA Homework 1", exact: true })).toBeVisible();
 
   // --- Google Calendar remains reachable as an optional integration ---
   await page.getByRole("tab", { name: "Integrations" }).click();
@@ -95,7 +102,7 @@ test("full workflow: dashboard, sidebar state, color picker, calendar, chat, rec
 
   // --- Back to Calendar: complete the task from the event-details modal ---
   await page.goto("/calendar");
-  await page.getByRole("button", { name: "QA Homework 1" }).click();
+  await page.getByRole("button", { name: "QA Homework 1", exact: true }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "QA Homework 1" })).toBeVisible();
   await dialog.getByRole("button", { name: "Complete" }).click();

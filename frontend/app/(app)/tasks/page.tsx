@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
+import { Plus } from "lucide-react";
 
 import { TaskForm } from "@/components/tasks/TaskForm";
 import { TaskListItem } from "@/components/tasks/TaskListItem";
@@ -190,7 +191,8 @@ function TasksPageContent() {
         description="Everything due across your courses."
         action={
           <Button onClick={() => setIsCreateOpen(true)} disabled={hasNoCourses}>
-            + New task
+            <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+            New task
           </Button>
         }
       />
@@ -242,7 +244,12 @@ function TasksPageContent() {
         <EmptyState
           title="No tasks found"
           description="Try clearing filters, or add your first task."
-          action={<Button onClick={() => setIsCreateOpen(true)}>+ New task</Button>}
+          action={
+            <Button onClick={() => setIsCreateOpen(true)}>
+              <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+              New task
+            </Button>
+          }
         />
       )}
 

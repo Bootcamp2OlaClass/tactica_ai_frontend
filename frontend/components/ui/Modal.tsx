@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId } from "react";
+import { X } from "lucide-react";
 
 interface ModalProps {
   title: string;
@@ -39,7 +40,7 @@ export function Modal({ title, onClose, children }: ModalProps) {
             aria-label="Close dialog"
             className="rounded-lg p-1.5 text-[#696977] transition hover:bg-[#f6f4ff] hover:text-[#17171c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#315bd8] dark:text-[#9797a6] dark:hover:bg-[#22222c] dark:hover:text-[#f2f2f5]"
           >
-            ✕
+            <X size={18} strokeWidth={1.8} aria-hidden="true" />
           </button>
         </div>
 
